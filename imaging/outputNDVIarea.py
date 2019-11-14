@@ -2,11 +2,18 @@
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
+import sys
+from sys import argv
 
 MIN_MATCH_COUNT = 10
 
-img1 = cv2.imread('./piNoir.jpg')          # queryImage
-img2 = cv2.imread('./pi.jpg') # trainImage
+#img1 = cv2.imread('./piNoir1.jpg')          # queryImage
+#img2 = cv2.imread('./pi1.jpg') # trainImage
+
+img1 = cv2.imread(sys.argv[1])          # queryImage
+img2 = cv2.imread(sys.argv[2]) # trainImage
+
+
 # dtype:uint8
 # imwrite after imread is unchange
 # cv2 object is (hight,width,color(BGR)),Pillow object is RGB
