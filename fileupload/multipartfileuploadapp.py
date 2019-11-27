@@ -46,4 +46,4 @@ def handle_over_max_file_size(error):
 # main
 if __name__ == "__main__":
     print app.url_map
-    app.run(host='localhost', port=3000)
+    app.run(host='0.0.0.0', port=3000)
