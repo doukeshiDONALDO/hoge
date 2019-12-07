@@ -4,14 +4,15 @@ import cv2
 from matplotlib import pyplot as plt
 import sys
 from sys import argv
-
+import sqlite3
+import subprocess
 MIN_MATCH_COUNT = 10
 
 #img1 = cv2.imread('./piNoir1.jpg')          # queryImage
 #img2 = cv2.imread('./pi1.jpg') # trainImage
 
-img1 = cv2.imread(sys.argv[1])          # queryImage
-img2 = cv2.imread(sys.argv[2]) # trainImage
+img1 = cv2.imread(sys.argv[1])          # noirImage
+img2 = cv2.imread(sys.argv[2]) # normalImage
 
 
 # dtype:uint8
@@ -68,10 +69,37 @@ img_mask = cv2.inRange(img5, bgrLower, bgrUpper)
 result = cv2.bitwise_and(img5, img5, mask=img_mask)
 
 img6 = result[:,:,2]
+nsum = 0
 for i in range(256):
     print('count:%s ' % i)
     print(np.count_nonzero(img6[:,:] == i))
-    #print(np.where(result[:,:,2] == i))
+    nsum += np.count_nonzero(img6[:,:] == i)
+    print(nsum)
+
+
+
+
+db_name = './../fileupload/filename.db'
+conn = sqlite3.connect(db_name)
+c = conn.cursor()
+sql = "select * from ndvi order by id desc limit 1"
+c2 = c.execute(sql)
+c3 = c2.fetchone()
+conn.commit()
+conn.close()
+idkey = c3[0]
+conn = sqlite3.connect(db_name)
+c = conn.cursor()
+sql = "update ndvi  set value = {} where  id = {}".format(nsum,idkey)
+c2 = c.execute(sql)
+conn.commit()
+conn.close()
+
+cmd = "python ./../reinforced/q_learning.py {}".format(nsum)
+subprocess.call(cmd.split())
+
+
+
 ## NDVI area
 #mask = 100
 ##print(np.count_nonzero(img3[:,:,2] >mask))
@@ -88,14 +116,14 @@ for i in range(256):
 ##img3[:,:,2] = img4
 #
 ## confirm NDVI list
-import csv
-with open("stock.csv", "w") as f:
-    writer = csv.writer(f,lineterminator="\n")
-    writer.writerows(img6)
-
+#import csv
+#with open("stock.csv", "w") as f:
+#    writer = csv.writer(f,lineterminator="\n")
+#    writer.writerows(img6)
+#
 #cv2.imshow('a',img3)
-cv2.imshow('a',img6)
-cv2.imwrite('./auau.png',img3)
-# キー押下で終了
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+#cv2.imshow('a',img6)
+#cv2.imwrite('./auau.png',img3)
+## キー押下で終了
+#cv2.waitKey(0)
+#cv2.destroyAllWindows()

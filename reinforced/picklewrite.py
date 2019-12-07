@@ -1,5 +1,14 @@
 import pickle
+import numpy
 
-a = [12,334,5,54,34,33]
-with open("auau.test","wb") as f:
-    pickle.dump(a,f)
+
+class QQ():
+    def __init__(self):
+        self.qtable = numpy.zeros((8,8)) 
+        self.state = None
+
+
+if __name__=="__main__":
+    test = QQ()
+    with open("qtable","wb") as f:
+        pickle.dump(test,f)

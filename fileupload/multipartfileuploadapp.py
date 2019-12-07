@@ -89,7 +89,7 @@ def upload_multipart():
 
         # TODO: 2filenames send outputNDVI.py
 
-        cmd = "./imaging/outputNDVI.py {} {}".format(clist[1],clist[2])
+        cmd = "python ./../imaging/outputNDVI.py {} {}".format(clist[1],clist[2])
         subprocess.call(cmd.split())
 
     return make_response(jsonify({'result':'upload OK.'}))

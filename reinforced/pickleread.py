@@ -1,6 +1,7 @@
 import pickle
+import numpy
 
-with open("auau.test","rb") as f:
+with open("qtable","rb") as f:
     a = pickle.load(f)
     
 print(a)
