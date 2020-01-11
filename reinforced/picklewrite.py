@@ -10,5 +10,6 @@ class QQ():
 
 if __name__=="__main__":
     test = QQ()
-    with open("qtable","wb") as f:
-        pickle.dump(test,f)
+    a = []
+    with open("sum","wb") as f:
+        pickle.dump(a,f)
