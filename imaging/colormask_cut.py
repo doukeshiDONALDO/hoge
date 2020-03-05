@@ -60,104 +60,54 @@ E = np.eye(3)
 dst = cv2.warpPerspective(img1,M,(1640,1232))
 
 # 対応する特徴点同士を描画
-#img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, good[:30], None, flags=2)
-
-#ratate
-height = img2.shape[0]
-width = img2.shape[1]
-center = (int(width/2), int(height/2))
-angle = 0.0 # +hidari -migi
-scale = 1.0
-trans = cv2.getRotationMatrix2D(center, angle , scale)
-dst = cv2.warpAffine(dst, trans, (width,height))
-img2 = cv2.warpAffine(img2, trans, (width,height))
-
+img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, good[:30], None, flags=2)
 
 #cut       [hight(ue:shita)  , weight(hidari:migi)   ]
-img2 = img2[655:908,750:995,:]
-dst  =  dst[655:908,750:995,:]
+img2 = img2[667:915,735:980,:]
+dst  =  dst[667:915,735:980,:]
 
 # create empty array 
 #img3 = np.empty_like(img1)
 img3 = np.zeros(img2.shape)
-a = np.zeros(img2.shape,dtype=np.float128)
 
-## make color_mask
+
+#color mask
 bgrLower = np.array([0,0,0])
-bgrUpper = np.array([180,200,201])
+bgrUpper = np.array([150,200,150])
 img_mask = cv2.inRange(img2, bgrLower, bgrUpper)
-imgg = cv2.bitwise_and(img2, img2, mask=img_mask)
-#dst  = cv2.bitwise_and(dst, dst, mask=img_mask)
+img2 = cv2.bitwise_and(img2, img2, mask=img_mask)
+#dst = cv2.bitwise_and(dst, dst, mask=img_mask)
 
 
-#print(np.count_nonzero(img3==0))
+print(np.count_nonzero(img3==0))
 
 # NDVI process ((Ir - R) / (Ir + R) + 1 ) * 100
 # if[divide by zero encountered in divid], x / 0 = 0(numpy)
-
-a = dst[:,:,2].astype(np.float128) + img2[:,:,2].astype(np.float128)
-b = dst[:,:,2].astype(np.float128) - img2[:,:,2].astype(np.float128)
-c = (b / a + 1 ) * 100
-img3[:,:,2] = c.astype(np.int64)
+img3[:,:,2] = ((dst[:,:,2] - img2[:,:,2]) / (dst[:,:,2] +  img2[:,:,2]) + 1 )* 100
 img3[:,:,0] = img2[:,:,0]
 img3[:,:,1] = img2[:,:,1]
 
-
-img3  = cv2.bitwise_and(img3, img3, mask=img_mask)
-
-#print("img3: {}".format(np.count_nonzero(img3[:,:,2] > 200)))
+print("img3: {}".format(np.count_nonzero(img3[:,:,2] > 200)))
 #print("img2: {}".format(np.count_nonzero(img2[:,:,2] < 0)))
 
 
+imgg = img3
 
-##color mask
-#bgrLower = np.array([0,0,0])
-#bgrUpper = np.array([180,200,201])
-#img_mask = cv2.inRange(img3, bgrLower, bgrUpper)
-#result = cv2.bitwise_and(img3, img3, mask=img_mask)
+#color mask
+bgrLower = np.array([0,0,0])
+bgrUpper = np.array([180,200,201])
+img_mask = cv2.inRange(img3, bgrLower, bgrUpper)
+result = cv2.bitwise_and(img3, img3, mask=img_mask)
 
+img6 = result[:,:,2]
 nsum = 0
-for i in range(1,201):
-    value = np.count_nonzero(img3[:,:,2] == i)
-    print('count{}: {}'.format(i,value))
-
-    nsum = value * i + nsum
-print("sum: {}".format(nsum))
+for i in range(1,200):
+    print('count:%s ' % i)
+    print(np.count_nonzero(img6[:,:] == i))
+    nsum += np.count_nonzero(img6[:,:] == i)
+    print(nsum)
 print("avarage: {}".format(nsum/255))
 
-
-#what id in last colum?
-db_name = './../fileupload/filename.db'
-conn = sqlite3.connect(db_name)
-c = conn.cursor()
-sql = "select * from ndvi order by id desc limit 1"
-c2 = c.execute(sql)
-c3 = c2.fetchone()
-conn.commit()
-conn.close()
-idkey = c3[0]
-
-#what ndvi in last-1 colum?
-conn = sqlite3.connect(db_name)
-c = conn.cursor()
-sql = "select * from ndvi where id = {}".format(idkey - 1)
-c2 = c.execute(sql)
-c3 = c2.fetchone()
-conn.commit()
-conn.close()
-before_ndvi = c3[3]
-
-#update ndvi in last colum
-conn = sqlite3.connect(db_name)
-c = conn.cursor()
-sql = "update ndvi  set value = {} where  id = {}".format(nsum,idkey)
-c2 = c.execute(sql)
-conn.commit()
-conn.close()
-
-print("diff: {}".format(nsum - before_ndvi))
-cmd = "python ./../reinforced/q_learning.py {}".format(nsum - before_ndvi)
-subprocess.call(cmd.split())
 
 
 
@@ -176,16 +126,16 @@ subprocess.call(cmd.split())
 #print(np.count_nonzero(opening > mask))
 ##img3[:,:,2] = img4
 #
-# confirm NDVI list
+## confirm NDVI list
 #import csv
 #with open("stock.csv", "w") as f:
 #    writer = csv.writer(f,lineterminator="\n")
-#    writer.writerows(imgg[:,:,2])
-
+#    writer.writerows(img6)
+#
 #cv2.imshow('a',img3)
 #cv2.imshow('a',img6)
-cv2.imwrite('/home/niki/hoge/fileupload/{}.png'.format("imgg"),imgg)
-cv2.imwrite('/home/niki/hoge/fileupload/{}.png'.format("img3"),img3[:,:,2])
+cv2.imwrite('/home/niki/hoge/fileupload/{}.png'.format("dst"),dst)
+cv2.imwrite('/home/niki/hoge/fileupload/{}.png'.format("img2"),img2)
 ## キー押下で終了
 #cv2.waitKey(0)
 #cv2.destroyAllWindows()

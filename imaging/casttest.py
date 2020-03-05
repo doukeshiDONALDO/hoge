@@ -103,89 +103,10 @@ img3[:,:,0] = img2[:,:,0]
 img3[:,:,1] = img2[:,:,1]
 
 
-img3  = cv2.bitwise_and(img3, img3, mask=img_mask)
-
-#print("img3: {}".format(np.count_nonzero(img3[:,:,2] > 200)))
-#print("img2: {}".format(np.count_nonzero(img2[:,:,2] < 0)))
 
 
 
-##color mask
-#bgrLower = np.array([0,0,0])
-#bgrUpper = np.array([180,200,201])
-#img_mask = cv2.inRange(img3, bgrLower, bgrUpper)
-#result = cv2.bitwise_and(img3, img3, mask=img_mask)
-
-nsum = 0
-for i in range(1,201):
-    value = np.count_nonzero(img3[:,:,2] == i)
-    print('count{}: {}'.format(i,value))
-
-    nsum = value * i + nsum
-print("sum: {}".format(nsum))
-print("avarage: {}".format(nsum/255))
+print(c)
 
 
-#what id in last colum?
-db_name = './../fileupload/filename.db'
-conn = sqlite3.connect(db_name)
-c = conn.cursor()
-sql = "select * from ndvi order by id desc limit 1"
-c2 = c.execute(sql)
-c3 = c2.fetchone()
-conn.commit()
-conn.close()
-idkey = c3[0]
-
-#what ndvi in last-1 colum?
-conn = sqlite3.connect(db_name)
-c = conn.cursor()
-sql = "select * from ndvi where id = {}".format(idkey - 1)
-c2 = c.execute(sql)
-c3 = c2.fetchone()
-conn.commit()
-conn.close()
-before_ndvi = c3[3]
-
-#update ndvi in last colum
-conn = sqlite3.connect(db_name)
-c = conn.cursor()
-sql = "update ndvi  set value = {} where  id = {}".format(nsum,idkey)
-c2 = c.execute(sql)
-conn.commit()
-conn.close()
-
-print("diff: {}".format(nsum - before_ndvi))
-cmd = "python ./../reinforced/q_learning.py {}".format(nsum - before_ndvi)
-subprocess.call(cmd.split())
-
-
-
-## NDVI area
-#mask = 100
-##print(np.count_nonzero(img3[:,:,2] >mask))
-#
-## binarization
-#img4 = img3[:,:,2]
-#ret,thresh1 = cv2.threshold(img4,mask,255,cv2.THRESH_BINARY)
-#
-## opening process
-#kernel = np.ones((5,5),np.uint8)
-#opening = cv2.morphologyEx(thresh1, cv2.MORPH_OPEN, kernel)
-#
-#print(np.count_nonzero(opening > mask))
-##img3[:,:,2] = img4
-#
-# confirm NDVI list
-#import csv
-#with open("stock.csv", "w") as f:
-#    writer = csv.writer(f,lineterminator="\n")
-#    writer.writerows(imgg[:,:,2])
-
-#cv2.imshow('a',img3)
-#cv2.imshow('a',img6)
-cv2.imwrite('/home/niki/hoge/fileupload/{}.png'.format("imgg"),imgg)
-cv2.imwrite('/home/niki/hoge/fileupload/{}.png'.format("img3"),img3[:,:,2])
-## キー押下で終了
-#cv2.waitKey(0)
-#cv2.destroyAllWindows()
+print(img3[:,:,2])

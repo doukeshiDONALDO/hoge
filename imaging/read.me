@@ -1,2 +1,13 @@
 python NDVIhistogram.py ../fileupload/static/piNoir201912131735.png ../fileupload/static/piCamera201912131735.png
 
+
+
+img2 = img2[667:915,735:980,:]
+dst  =  dst[667:915,735:980,:]
+
+
+
+## make color_mask
+bgrLower = np.array([0,0,0])
+bgrUpper = np.array([180,200,201])
+

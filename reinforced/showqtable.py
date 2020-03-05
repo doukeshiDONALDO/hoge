@@ -12,7 +12,7 @@ class QQ():
 
 
 
-with open("qtable","rb") as f:
+with open("ini_qtable","rb") as f:
     qq = pickle.load(f)
 
 

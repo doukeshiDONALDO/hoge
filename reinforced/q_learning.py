@@ -106,16 +106,16 @@ if __name__ == '__main__':
         target_host = '192.168.73.235'
         target_port = 9999
         
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
-        client.connect((target_host,target_port))
-        
-        client.send(light[qq.action])
-        
-        response = client.recv(4096)
-        client.close()
-        print(light[qq.action])
-        print(response)
+#        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#        
+#        client.connect((target_host,target_port))
+#        
+#        client.send(light[qq.action])
+#        
+#        response = client.recv(4096)
+#        client.close()
+#        print(light[qq.action])
+#        print(response)
 
     with open("/home/niki/hoge/reinforced/qtable","wb") as f:
         pickle.dump(qq,f)

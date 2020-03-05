@@ -5,7 +5,8 @@ import werkzeug
 from datetime import datetime
 import sqlite3
 import subprocess
-
+import sys
+import signal
 
 db_name = 'filename.db'
 
@@ -64,6 +65,7 @@ def upload_multipart():
 
         conn = sqlite3.connect(db_name)
         c = conn.cursor()
+        print(sql)
         c.execute(sql)
         conn.commit()
         conn.close()
@@ -83,15 +85,16 @@ def upload_multipart():
 
         conn = sqlite3.connect(db_name)
         c = conn.cursor()
+        print(sql)
         c.execute(sql)
         conn.commit()
         conn.close()
 
         # TODO: 2filenames send outputNDVI.py
 
-        cmd = "python ./../imaging/outputNDVI.py {} {}".format(clist[1],clist[2])
+        cmd = "python /home/niki/hoge/imaging/outputNDVIarea.py /home/niki/hoge/fileupload/static/{} /home/niki/hoge/fileupload/static/{}".format(clist[1],clist[2])
         subprocess.call(cmd.split())
-
+        print(cmd)
     return make_response(jsonify({'result':'upload OK.'}))
 
 @app.errorhandler(werkzeug.exceptions.RequestEntityTooLarge)
@@ -99,7 +102,15 @@ def handle_over_max_file_size(error):
     print("werkzeug.exceptions.RequestEntityTooLarge")
     return 'result : file size is overed.'
 
+def handler(singnal,frame):
+    sys.exit(0)
+
 # main
 if __name__ == "__main__":
     print(app.url_map)
     app.run(host='0.0.0.0', port=3000,threaded=True)
+
+
+    signal.signal(signal.SIGINT,handler)
+    signal.pause()
+

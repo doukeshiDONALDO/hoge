@@ -1,0 +1,2 @@
+/home/niki/hoge/fileupload/static/piNoir201912161100.png /home/niki/hoge/fileupload/static/piCamera201912161100.png
+
